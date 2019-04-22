@@ -4,17 +4,8 @@ const { GraphQLServer } = require('graphql-yoga')
 const mongoose = require('mongoose');
 const path = require("path")
 
-mongoose.connect('mongodb://localhost/test5', {useNewUrlParser: true});
 
-
-// ... other app.use middleware 
-app.use(express.static(path.join(__dirname, "client", "build")))
-
-// ...
-// Right before your app.listen(), add this:
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
-});
+mongoose.connect(process.env.MONGOLAB_URI ||'mongodb://localhost/test5', {useNewUrlParser: true});
 
 var Todo = mongoose.model('Todo', {
   text: String,
@@ -59,6 +50,16 @@ const resolvers = {
   }
   }
 }
+
+
+// // ... other app.use middleware added later for heroku 
+// app.use(express.static(path.join(__dirname, "client", "build")))
+
+// // ...
+// // Right before your app.listen(), add this: added later for heroku 
+// app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+// });
 
 const server = new GraphQLServer({ typeDefs, resolvers });
 mongoose.connection.once('open', () => {
